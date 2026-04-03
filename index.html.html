@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJ Connect — Menschen, Glaube und Organisation verbinden.</title>
+<style>
+  :root {
+    --navy: #1A3560;
+    --navy-light: #24487a;
+    --gold: #C8941A;
+    --gold-light: #f0b832;
+    --bg: #F7F8FC;
+    --surface: #FFFFFF;
+    --surface2: #F0F2F7;
+    --border: #E2E6EF;
+    --text: #1C1C2E;
+    --text2: #6B7280;
+    --text3: #9CA3AF;
+    --green: #0F6E56; --green-bg: #E1F5EE;
+    --amber: #854F0B; --amber-bg: #FAEEDA;
+    --red: #A32D2D; --red-bg: #FCEBEB;
+    --blue: #185FA5; --blue-bg: #E6F1FB;
+    --radius: 10px; --radius-sm: 6px; --radius-lg: 14px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+
+  /* ── Sidebar ── */
+  #sidebar { width: 230px; background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+  .sidebar-logo { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .sidebar-logo .cross { color: var(--gold); font-size: 22px; }
+  .sidebar-logo h1 { color: #fff; font-size: 17px; font-weight: 600; margin-top: 4px; }
+  .sidebar-logo p { color: var(--gold); font-size: 10px; margin-top: 2px; opacity: 0.9; }
+  .sidebar-section { padding: 12px 10px 4px; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 0.08em; text-transform: uppercase; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; margin: 1px 6px; border-radius: var(--radius-sm); cursor: pointer; color: rgba(255,255,255,0.7); font-size: 13px; transition: all 0.15s; }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .nav-item.active { background: rgba(200,148,26,0.2); color: #fff; }
+  .nav-item.active .nav-icon { color: var(--gold); }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+  .sidebar-bottom { margin-top: auto; padding: 12px 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .user-pill { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); }
+  .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; }
+  .user-name { color: #fff; font-size: 12px; font-weight: 500; }
+  .user-role { color: rgba(255,255,255,0.45); font-size: 11px; }
+
+  /* ── Main ── */
+  #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 54px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .topbar-title { font-size: 16px; font-weight: 600; color: var(--text); }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .content { flex: 1; overflow-y: auto; padding: 24px; }
+
+  /* ── Buttons ── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-primary:hover { background: var(--navy-light); }
+  .btn-gold { background: var(--gold); color: #fff; }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-outline:hover { background: var(--surface2); }
+  .btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid #F09595; }
+  .btn-danger:hover { background: #F7C1C1; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  /* ── Cards & Stats ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .stat-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .stat-value { font-size: 26px; font-weight: 600; color: var(--text); }
+  .stat-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .card-body { padding: 16px 18px; }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: var(--surface2); padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  /* ── Badge ── */
+  .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-red { background: var(--red-bg); color: var(--red); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); }
+  .badge-gray { background: var(--surface2); color: var(--text2); }
+
+  /* ── Avatar ── */
+  .avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
+
+  /* ── Form / Modal ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-md); }
+  .modal-head { background: var(--navy); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .modal-head h3 { color: #fff; font-size: 15px; font-weight: 600; }
+  .modal-close { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; line-height: 1; }
+  .modal-close:hover { color: #fff; }
+  .modal-body { padding: 20px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 12px; font-weight: 500; color: var(--text2); }
+  .form-group input, .form-group select, .form-group textarea { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 13px; color: var(--text); background: var(--surface); outline: none; transition: border 0.15s; font-family: inherit; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--navy); }
+  .form-group textarea { resize: vertical; min-height: 70px; }
+
+  /* ── Search/Filter bar ── */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .search-wrap { position: relative; flex: 1; min-width: 180px; }
+  .search-wrap input { width: 100%; padding-left: 32px; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
+
+  /* ── Dashboard ── */
+  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .dash-list-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .dash-list-item:last-child { border-bottom: none; }
+
+  /* ── DMS ── */
+  .dms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .doc-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .doc-card:hover { border-color: var(--navy); background: var(--blue-bg); }
+  .doc-icon { font-size: 28px; margin-bottom: 8px; }
+  .doc-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; word-break: break-word; }
+  .doc-meta { font-size: 11px; color: var(--text3); }
+
+  /* ── Worship/Calendar ── */
+  .worship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .member-band { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 6px; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 9px 16px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+  .tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* ── Twint ── */
+  .twint-box { background: linear-gradient(135deg, #009de0 0%, #006fa3 100%); border-radius: var(--radius-lg); padding: 24px; color: #fff; margin-bottom: 16px; }
+  .twint-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .twint-sub { font-size: 13px; opacity: 0.85; }
+  .twint-amount { font-size: 36px; font-weight: 700; margin: 12px 0 4px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    #sidebar { display: none; }
+    .dash-grid, .worship-grid, .form-grid { grid-template-columns: 1fr; }
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text2); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .tag { display: inline-block; background: var(--blue-bg); color: var(--blue); border-radius: 20px; padding: 2px 8px; font-size: 11px; font-weight: 500; margin: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ═══════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="cross">✝</div>
+    <h1>AJ Connect</h1>
+    <p>Menschen, Glaube und Organisation verbinden.</p>
+  </div>
+
+  <div class="sidebar-section">Übersicht</div>
+  <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">⊞</span> Dashboard</div>
+
+  <div class="sidebar-section">Gemeinde</div>
+  <div class="nav-item" onclick="showPage('mitglieder',this)"><span class="nav-icon">👥</span> Mitglieder</div>
+  <div class="nav-item" onclick="showPage('kontakte',this)"><span class="nav-icon">📋</span> Kontakte</div>
+  <div class="nav-item" onclick="showPage('smallgroups',this)"><span class="nav-icon">🏠</span> Small Groups</div>
+  <div class="nav-item" onclick="showPage('gottesdienst',this)"><span class="nav-icon">⛪</span> Gottesdienste</div>
+  <div class="nav-item" onclick="showPage('worship',this)"><span class="nav-icon">🎵</span> Worship</div>
+  <div class="nav-item" onclick="showPage('veranstaltungen',this)"><span class="nav-icon">📅</span> Veranstaltungen</div>
+
+  <div class="sidebar-section">Finanzen</div>
+  <div class="nav-item" onclick="showPage('spenden',this)"><span class="nav-icon">💙</span> Spenden / Twint</div>
+  <div class="nav-item" onclick="showPage('kreditoren',this)"><span class="nav-icon">📤</span> Kreditoren</div>
+  <div class="nav-item" onclick="showPage('debitoren',this)"><span class="nav-icon">📥</span> Debitoren</div>
+
+  <div class="sidebar-section">Verwaltung</div>
+  <div class="nav-item" onclick="showPage('verkauf',this)"><span class="nav-icon">🛍️</span> Verkauf</div>
+  <div class="nav-item" onclick="showPage('einkauf',this)"><span class="nav-icon">🛒</span> Einkauf</div>
+  <div class="nav-item" onclick="showPage('artikel',this)"><span class="nav-icon">📦</span> Artikel</div>
+  <div class="nav-item" onclick="showPage('hr',this)"><span class="nav-icon">👔</span> Personal / HR</div>
+  <div class="nav-item" onclick="showPage('dms',this)"><span class="nav-icon">📁</span> Dokumente</div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">AJ</div>
+      <div>
+        <div class="user-name">Admin</div>
+        <div class="user-role">AJ Connect Demo</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══════════════════════════════════════════════════════════════ -->
+<div id="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-actions">
+      <span style="font-size:12px;color:var(--text3)">Demo-Version · alle Daten lokal</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div id="page-dashboard" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Mitglieder</div><div class="stat-value">127</div><div class="stat-sub">+3 diesen Monat</div></div>
+        <div class="stat-card"><div class="stat-label">Spenden (Juli)</div><div class="stat-value" style="color:var(--green)">CHF 4'820</div><div class="stat-sub">Twint: CHF 1'240</div></div>
+        <div class="stat-card"><div class="stat-label">Small Groups</div><div class="stat-value">8</div><div class="stat-sub">64 Teilnehmer</div></div>
+        <div class="stat-card"><div class="stat-label">Nächster Gottesdienst</div><div class="stat-value" style="font-size:17px">Sonntag</div><div class="stat-sub">06. Juli · 10:00 Uhr</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Letzte Aktivitäten</span></div>
+          <div class="card-body">
+            <div class="dash-list-item"><span style="font-size:18px">👤</span><div><div style="font-size:13px;font-weight:500">Maria Müller eingetreten</div><div style="font-size:11px;color:var(--text3)">vor 2 Stunden</div></div></div>
+            <div class="dash-list-item"><span style="font-size:18px">💙</span><div><div style="font-size:13px;font-weight:500">Spende CHF 150 via Twint</div><div style="font-size:11px;color:var(--text3)">vor 4 Stunden</div></div></div>
+            <div class="dash-list-item"><span style="font-size:18px">🎵</span><div><div style="font-size:13px;font-weight:500">Worship-Plan Sonntag gesetzt</div><div style="font-size:11px;color:var(--text3)">gestern</div></div></div>
+            <div class="dash-list-item"><span style="font-size:18px">📦</span><div><div style="font-size:13px;font-weight:500">Bestellung #B024 eingetroffen</div><div style="font-size:11px;color:var(--text3)">gestern</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Nächste Veranstaltungen</span></div>
+          <div class="card-body">
+            <div class="dash-list-item"><span style="font-size:18px">⛪</span><div><div style="font-size:13px;font-weight:500">Gottesdienst</div><div style="font-size:11px;color:var(--text3)">So 06.07 · 10:00 Uhr</div></div><span class="badge badge-green">Geplant</span></div>
+            <div class="dash-list-item"><span style="font-size:18px">🏠</span><div><div style="font-size:13px;font-weight:500">Hauskreis Zürich Nord</div><div style="font-size:11px;color:var(--text3)">Di 08.07 · 19:30 Uhr</div></div><span class="badge badge-blue">Small Group</span></div>
+            <div class="dash-list-item"><span style="font-size:18px">📅</span><div><div style="font-size:13px;font-weight:500">Sommerfest</div><div style="font-size:11px;color:var(--text3)">Sa 19.07 · 14:00 Uhr</div></div><span class="badge badge-amber">Planung</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MITGLIEDER ── -->
+    <div id="page-mitglieder" class="page">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Gesamt</div><div class="stat-value" id="m-cnt">5</div></div>
+        <div class="stat-card"><div class="stat-label">Aktiv</div><div class="stat-value" style="color:var(--green)" id="m-aktiv">3</div></div>
+        <div class="stat-card"><div class="stat-label">Besucher</div><div class="stat-value" style="color:var(--amber)" id="m-besucher">1</div></div>
+        <div class="stat-card"><div class="stat-label">Dokumente</div><div class="stat-value">12</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Mitgliederverzeichnis</span>
+          <button class="btn btn-primary" onclick="openModal('modal-mitglied')">+ Neues Mitglied</button>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="toolbar" style="padding:14px 18px 0">
+            <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" placeholder="Suchen..." oninput="filterTable('mitglieder-table',this.value)"></div>
+            <select onchange="filterTableByCol('mitglieder-table',5,this.value)" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;background:var(--surface);color:var(--text)">
+              <option value="">Alle Status</option><option>Aktiv</option><option>Besucher</option><option>Inaktiv</option>
+            </select>
+            <button class="btn btn-outline btn-sm" onclick="showPage('dms',document.querySelector('[onclick*=dms]'))">📁 DMS</button>
+          </div>
+          <div class="table-wrap" style="padding:14px 18px">
+            <table id="mitglieder-table">
+              <thead><tr><th>Name</th><th>E-Mail</th><th>Telefon</th><th>Eingetreten</th><th>Small Group</th><th>Status</th><th></th></tr></thead>
+              <tbody id="mitglieder-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KONTAKTE ── -->
+    <div id="page-kontakte" class="page">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Kontakte</span><button class="btn btn-primary" onclick="openModal('modal-kontakt')">+ Neuer Kontakt</button></div>
+        <div class="card-body" style="padding:0">
+          <div class="toolbar" style="padding:14px 18px 0"><div class="search-wrap"><span class="search-icon">🔍</span><input type="text" placeholder="Suchen..." oninput="filterTable('kontakte-table',this.value)"></div></div>
+          <div class="table-wrap" style="padding:14px 18px">
+            <table id="kontakte-table">
+              <thead><tr><th>Name</th><th>Organisation</th><th>E-Mail</th><th>Telefon</th><th>Typ</th><th></th></tr></thead>
+              <tbody id="kontakte-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SMALL GROUPS ── -->
+    <div id="page-smallgroups" class="page">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Aktive Groups</div><div class="stat-value">8</div></div>
+        <div class="stat-card"><div class="stat-label">Teilnehmer total</div><div class="stat-value">64</div></div>
+        <div class="stat-card"><div class="stat-label">Leiter</div><div class="stat-value">8</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Small Groups / Hauskreise</span><button class="btn btn-primary" onclick="openModal('modal-sg')">+ Neue Group</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="sg-table">
+            <thead><tr><th>Name</th><th>Leiter/in</th><th>Tag</th><th>Ort</th><th>Mitglieder</th><th>Status</th><th></th></tr></thead>
+            <tbody id="sg-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GOTTESDIENSTE ── -->
+    <div id="page-gottesdienst" class="page">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><span class="card-title">Gottesdienst-Planung</span><button class="btn btn-primary" onclick="openModal('modal-gd')">+ Neuer Gottesdienst</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="gd-table">
+            <thead><tr><th>Datum</th><th>Thema / Predigt</th><th>Prediger</th><th>Worship-Team</th><th>Ort</th><th>Status</th><th></th></tr></thead>
+            <tbody id="gd-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WORSHIP ── -->
+    <div id="page-worship" class="page">
+      <div class="tabs">
+        <div class="tab active" onclick="showTab(this,'wt-lieder')">Liederbuch</div>
+        <div class="tab" onclick="showTab(this,'wt-band')">Band-Besetzung</div>
+        <div class="tab" onclick="showTab(this,'wt-plan')">Worship-Plan</div>
+      </div>
+      <div id="wt-lieder">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Lieder &amp; Noten</span><button class="btn btn-primary" onclick="openModal('modal-lied')">+ Neues Lied</button></div>
+          <div class="table-wrap card-body" style="padding:0 18px 18px">
+            <table id="lieder-table">
+              <thead><tr><th>Titel</th><th>Künstler / Autor</th><th>Tonart</th><th>Sprache</th><th>Tags</th><th></th></tr></thead>
+              <tbody id="lieder-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="wt-band" style="display:none">
+        <div class="worship-grid">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Bandmitglieder</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-band')">+ Person</button></div>
+            <div class="card-body" id="band-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Nächster Sonntag — Besetzung</span></div>
+            <div class="card-body" id="besetzung-list"><p style="color:var(--text3);font-size:13px">Noch keine Besetzung für nächsten Sonntag geplant.</p></div>
+          </div>
+        </div>
+      </div>
+      <div id="wt-plan" style="display:none">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Worship-Pläne</span><button class="btn btn-gold btn-sm">Plan erstellen</button></div>
+          <div class="card-body">
+            <div style="background:var(--surface2);border-radius:var(--radius);padding:16px;margin-bottom:12px">
+              <div style="font-weight:600;margin-bottom:8px">Sonntag 06. Juli 2025</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:10px;font-size:13px"><span style="color:var(--text3);width:20px">1.</span><span>10,000 Reasons (Bless the Lord)</span><span class="badge badge-blue">G-Dur</span></div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:13px"><span style="color:var(--text3);width:20px">2.</span><span>Herr, dein Licht</span><span class="badge badge-blue">A-Dur</span></div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:13px"><span style="color:var(--text3);width:20px">3.</span><span>Großer Gott</span><span class="badge badge-blue">D-Dur</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VERANSTALTUNGEN ── -->
+    <div id="page-veranstaltungen" class="page">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Veranstaltungen</span><button class="btn btn-primary" onclick="openModal('modal-event')">+ Neue Veranstaltung</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="event-table">
+            <thead><tr><th>Veranstaltung</th><th>Datum</th><th>Ort</th><th>Anmeldungen</th><th>Status</th><th></th></tr></thead>
+            <tbody id="event-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SPENDEN / TWINT ── -->
+    <div id="page-spenden" class="page">
+      <div class="twint-box">
+        <div class="twint-title">💙 Twint Spenden</div>
+        <div class="twint-sub">Monat Juli 2025</div>
+        <div class="twint-amount">CHF 4'820</div>
+        <div style="font-size:12px;opacity:0.8">Twint: CHF 1'240 · Überweisung: CHF 2'580 · Bar: CHF 1'000</div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:16px">
+        <div class="stat-card"><div class="stat-label">Spenden gesamt (2025)</div><div class="stat-value">CHF 28'450</div></div>
+        <div class="stat-card"><div class="stat-label">Ø pro Monat</div><div class="stat-value">CHF 4'075</div></div>
+        <div class="stat-card"><div class="stat-label">Aktive Spender</div><div class="stat-value">43</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Eingänge</span><button class="btn btn-primary" onclick="openModal('modal-spende')">+ Spende erfassen</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="spenden-table">
+            <thead><tr><th>Datum</th><th>Spender</th><th>Betrag</th><th>Zahlungsweg</th><th>Verwendungszweck</th><th>Status</th></tr></thead>
+            <tbody id="spenden-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KREDITOREN ── -->
+    <div id="page-kreditoren" class="page">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Offen</div><div class="stat-value" style="color:var(--red)">CHF 3'240</div></div>
+        <div class="stat-card"><div class="stat-label">Fällig diese Woche</div><div class="stat-value" style="color:var(--amber)">CHF 1'100</div></div>
+        <div class="stat-card"><div class="stat-label">Bezahlt (MTD)</div><div class="stat-value" style="color:var(--green)">CHF 5'800</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Eingangsrechnungen</span><button class="btn btn-primary" onclick="openModal('modal-kreditor')">+ Rechnung</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="kred-table">
+            <thead><tr><th>Lieferant</th><th>Rechnungsnr.</th><th>Betrag</th><th>Fällig</th><th>Kategorie</th><th>Status</th><th></th></tr></thead>
+            <tbody id="kred-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEBITOREN ── -->
+    <div id="page-debitoren" class="page">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Offen</div><div class="stat-value" style="color:var(--amber)">CHF 1'850</div></div>
+        <div class="stat-card"><div class="stat-label">Überfällig</div><div class="stat-value" style="color:var(--red)">CHF 420</div></div>
+        <div class="stat-card"><div class="stat-label">Bezahlt (MTD)</div><div class="stat-value" style="color:var(--green)">CHF 3'200</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Ausgangsrechnungen</span><button class="btn btn-primary" onclick="openModal('modal-debitor')">+ Rechnung</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="deb-table">
+            <thead><tr><th>Kunde</th><th>Rechnungsnr.</th><th>Betrag</th><th>Fällig</th><th>Beschreibung</th><th>Status</th><th></th></tr></thead>
+            <tbody id="deb-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VERKAUF ── -->
+    <div id="page-verkauf" class="page">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Verkaufsaufträge</span><button class="btn btn-primary" onclick="openModal('modal-vk')">+ Neuer Auftrag</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="vk-table">
+            <thead><tr><th>Auftrag Nr.</th><th>Kunde</th><th>Betrag</th><th>Datum</th><th>Artikel</th><th>Status</th><th></th></tr></thead>
+            <tbody id="vk-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EINKAUF ── -->
+    <div id="page-einkauf" class="page">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Bestellungen / Einkauf</span><button class="btn btn-primary" onclick="openModal('modal-ek')">+ Neue Bestellung</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="ek-table">
+            <thead><tr><th>Bestell-Nr.</th><th>Lieferant</th><th>Betrag</th><th>Bestellt am</th><th>Artikel</th><th>Status</th><th></th></tr></thead>
+            <tbody id="ek-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ARTIKEL ── -->
+    <div id="page-artikel" class="page">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Artikelstamm</span><button class="btn btn-primary" onclick="openModal('modal-art')">+ Neuer Artikel</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="art-table">
+            <thead><tr><th>Artikel-Nr.</th><th>Bezeichnung</th><th>Kategorie</th><th>Preis</th><th>Bestand</th><th>Status</th><th></th></tr></thead>
+            <tbody id="art-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HR ── -->
+    <div id="page-hr" class="page">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Mitarbeitende</div><div class="stat-value">6</div></div>
+        <div class="stat-card"><div class="stat-label">Freiwillige</div><div class="stat-value">34</div></div>
+        <div class="stat-card"><div class="stat-label">Lohnkosten/Mt.</div><div class="stat-value">CHF 12'400</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Mitarbeitende &amp; Freiwillige</span><button class="btn btn-primary" onclick="openModal('modal-hr')">+ Person erfassen</button></div>
+        <div class="table-wrap card-body" style="padding:0 18px 18px">
+          <table id="hr-table">
+            <thead><tr><th>Name</th><th>Funktion</th><th>Pensum</th><th>Monatslohn</th><th>Eingetreten</th><th>Typ</th><th></th></tr></thead>
+            <tbody id="hr-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DMS ── -->
+    <div id="page-dms" class="page">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <span class="card-title">Dokumenten-Management (DMS)</span>
+          <div style="display:flex;gap:8px">
+            <select style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;background:var(--surface);color:var(--text)">
+              <option>Alle Ordner</option><option>Finanzen</option><option>Personal</option><option>Protokolle</option><option>Mitglieder</option><option>Verträge</option>
+            </select>
+            <button class="btn btn-primary btn-sm">+ Dokument hochladen</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="dms-grid" id="dms-grid"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════════════════════════════════ -->
+
+<!-- Mitglied -->
+<div class="modal-overlay" id="modal-mitglied">
+  <div class="modal">
+    <div class="modal-head"><h3>Neues Mitglied</h3><button class="modal-close" onclick="closeModal('modal-mitglied')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Vorname *</label><input id="m-vn" type="text" placeholder="Anna"></div>
+        <div class="form-group"><label>Nachname *</label><input id="m-nn" type="text" placeholder="Müller"></div>
+        <div class="form-group"><label>E-Mail</label><input id="m-em" type="email" placeholder="anna@gemeinde.ch"></div>
+        <div class="form-group"><label>Telefon</label><input id="m-tel" type="text" placeholder="+41 79 000 00 00"></div>
+        <div class="form-group"><label>Geburtsdatum</label><input id="m-geb" type="date"></div>
+        <div class="form-group"><label>Status</label><select id="m-st"><option>Aktiv</option><option>Besucher</option><option>Inaktiv</option></select></div>
+        <div class="form-group full"><label>Adresse</label><input id="m-adr" type="text" placeholder="Musterstrasse 1, 8001 Zürich"></div>
+        <div class="form-group"><label>Small Group</label><input id="m-sg" type="text" placeholder="z.B. Hauskreis Nord"></div>
+        <div class="form-group"><label>Eingetreten am</label><input id="m-ein" type="date"></div>
+        <div class="form-group full"><label>Notizen</label><textarea id="m-no" placeholder="Dienste, Besonderheiten..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-mitglied')">Abbrechen</button><button class="btn btn-primary" onclick="addMitglied()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Kontakt -->
+<div class="modal-overlay" id="modal-kontakt">
+  <div class="modal">
+    <div class="modal-head"><h3>Neuer Kontakt</h3><button class="modal-close" onclick="closeModal('modal-kontakt')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Vorname</label><input id="k-vn" type="text"></div>
+        <div class="form-group"><label>Nachname *</label><input id="k-nn" type="text"></div>
+        <div class="form-group"><label>Organisation</label><input id="k-org" type="text" placeholder="Firma / Kirche"></div>
+        <div class="form-group"><label>Typ</label><select id="k-typ"><option>Partner</option><option>Lieferant</option><option>Interessent</option><option>Behörde</option><option>Andere</option></select></div>
+        <div class="form-group"><label>E-Mail</label><input id="k-em" type="email"></div>
+        <div class="form-group"><label>Telefon</label><input id="k-tel" type="text"></div>
+        <div class="form-group full"><label>Adresse</label><input id="k-adr" type="text"></div>
+        <div class="form-group full"><label>Notizen</label><textarea id="k-no"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-kontakt')">Abbrechen</button><button class="btn btn-primary" onclick="addKontakt()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Small Group -->
+<div class="modal-overlay" id="modal-sg">
+  <div class="modal">
+    <div class="modal-head"><h3>Neue Small Group</h3><button class="modal-close" onclick="closeModal('modal-sg')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Name *</label><input id="sg-n" type="text" placeholder="z.B. Hauskreis Zürich Nord"></div>
+        <div class="form-group"><label>Leiter/in</label><input id="sg-l" type="text"></div>
+        <div class="form-group"><label>Tag</label><select id="sg-t"><option>Montag</option><option>Dienstag</option><option>Mittwoch</option><option>Donnerstag</option><option>Freitag</option><option>Samstag</option></select></div>
+        <div class="form-group"><label>Uhrzeit</label><input id="sg-u" type="time" value="19:30"></div>
+        <div class="form-group full"><label>Ort</label><input id="sg-o" type="text" placeholder="Adresse oder Name"></div>
+        <div class="form-group"><label>Max. Teilnehmer</label><input id="sg-max" type="number" value="12"></div>
+        <div class="form-group"><label>Status</label><select id="sg-s"><option>Aktiv</option><option>Pausiert</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-sg')">Abbrechen</button><button class="btn btn-primary" onclick="addSG()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Gottesdienst -->
+<div class="modal-overlay" id="modal-gd">
+  <div class="modal">
+    <div class="modal-head"><h3>Gottesdienst planen</h3><button class="modal-close" onclick="closeModal('modal-gd')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Datum *</label><input id="gd-d" type="date"></div>
+        <div class="form-group"><label>Uhrzeit</label><input id="gd-u" type="time" value="10:00"></div>
+        <div class="form-group full"><label>Thema / Predigttitel</label><input id="gd-th" type="text" placeholder="z.B. Vertrauen in schwierigen Zeiten"></div>
+        <div class="form-group"><label>Prediger</label><input id="gd-pr" type="text"></div>
+        <div class="form-group"><label>Worship-Leiter</label><input id="gd-wl" type="text"></div>
+        <div class="form-group full"><label>Ort</label><input id="gd-o" type="text" placeholder="Gemeindehaus, Halle..."></div>
+        <div class="form-group"><label>Status</label><select id="gd-s"><option>Geplant</option><option>Bestätigt</option><option>Abgesagt</option></select></div>
+        <div class="form-group full"><label>Notizen</label><textarea id="gd-no" placeholder="Besonderheiten, Gäste..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-gd')">Abbrechen</button><button class="btn btn-primary" onclick="addGD()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Lied -->
+<div class="modal-overlay" id="modal-lied">
+  <div class="modal">
+    <div class="modal-head"><h3>Neues Lied</h3><button class="modal-close" onclick="closeModal('modal-lied')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Titel *</label><input id="li-t" type="text"></div>
+        <div class="form-group"><label>Künstler / Autor</label><input id="li-a" type="text"></div>
+        <div class="form-group"><label>Tonart</label><select id="li-k"><option>A-Dur</option><option>B-Dur</option><option>C-Dur</option><option>D-Dur</option><option>E-Dur</option><option>F-Dur</option><option>G-Dur</option><option>Am</option><option>Em</option></select></div>
+        <div class="form-group"><label>Sprache</label><select id="li-sp"><option>Deutsch</option><option>Englisch</option><option>Zweisprachig</option><option>Andere</option></select></div>
+        <div class="form-group"><label>Tempo (BPM)</label><input id="li-bpm" type="number" placeholder="120"></div>
+        <div class="form-group"><label>Tags</label><input id="li-tag" type="text" placeholder="Lobpreis, Anbetung..."></div>
+        <div class="form-group full"><label>Notizen / Chord Sheet Link</label><textarea id="li-no" placeholder="Link zu Noten, Besonderheiten..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-lied')">Abbrechen</button><button class="btn btn-primary" onclick="addLied()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Band -->
+<div class="modal-overlay" id="modal-band">
+  <div class="modal">
+    <div class="modal-head"><h3>Bandmitglied</h3><button class="modal-close" onclick="closeModal('modal-band')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Vorname *</label><input id="b-vn" type="text"></div>
+        <div class="form-group"><label>Nachname *</label><input id="b-nn" type="text"></div>
+        <div class="form-group"><label>Instrument / Funktion</label><select id="b-ins"><option>Gesang</option><option>Gitarre</option><option>Bass</option><option>Keyboard / Klavier</option><option>Schlagzeug</option><option>Cajon</option><option>Geige</option><option>Trompete</option><option>Worship-Leitung</option><option>Technik / Ton</option><option>Beamer</option></select></div>
+        <div class="form-group"><label>Verfügbarkeit</label><select id="b-av"><option>Jeden Sonntag</option><option>2x pro Monat</option><option>1x pro Monat</option><option>Auf Anfrage</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-band')">Abbrechen</button><button class="btn btn-primary" onclick="addBand()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Event -->
+<div class="modal-overlay" id="modal-event">
+  <div class="modal">
+    <div class="modal-head"><h3>Neue Veranstaltung</h3><button class="modal-close" onclick="closeModal('modal-event')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Name *</label><input id="ev-n" type="text" placeholder="z.B. Sommerfest 2025"></div>
+        <div class="form-group"><label>Datum</label><input id="ev-d" type="date"></div>
+        <div class="form-group"><label>Uhrzeit</label><input id="ev-u" type="time"></div>
+        <div class="form-group full"><label>Ort</label><input id="ev-o" type="text"></div>
+        <div class="form-group"><label>Max. Plätze</label><input id="ev-max" type="number"></div>
+        <div class="form-group"><label>Status</label><select id="ev-s"><option>Planung</option><option>Bestätigt</option><option>Abgesagt</option></select></div>
+        <div class="form-group full"><label>Beschreibung</label><textarea id="ev-desc"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-event')">Abbrechen</button><button class="btn btn-primary" onclick="addEvent()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Spende -->
+<div class="modal-overlay" id="modal-spende">
+  <div class="modal">
+    <div class="modal-head"><h3>Spende erfassen</h3><button class="modal-close" onclick="closeModal('modal-spende')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Datum *</label><input id="sp-d" type="date"></div>
+        <div class="form-group"><label>Betrag (CHF) *</label><input id="sp-b" type="number" placeholder="100"></div>
+        <div class="form-group full"><label>Spender (optional)</label><input id="sp-s" type="text" placeholder="Name oder anonym"></div>
+        <div class="form-group"><label>Zahlungsweg</label><select id="sp-w"><option>Twint</option><option>Überweisung</option><option>Bar</option><option>QR-Rechnung</option></select></div>
+        <div class="form-group"><label>Verwendungszweck</label><select id="sp-z"><option>Gemeinde allgemein</option><option>Mission</option><option>Diakonie</option><option>Jugend</option><option>Bauprojekt</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-spende')">Abbrechen</button><button class="btn btn-primary" onclick="addSpende()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Kreditor -->
+<div class="modal-overlay" id="modal-kreditor">
+  <div class="modal">
+    <div class="modal-head"><h3>Eingangsrechnung</h3><button class="modal-close" onclick="closeModal('modal-kreditor')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Lieferant *</label><input id="kr-l" type="text"></div>
+        <div class="form-group"><label>Rechnungsnummer</label><input id="kr-rn" type="text"></div>
+        <div class="form-group"><label>Betrag (CHF)</label><input id="kr-b" type="number"></div>
+        <div class="form-group"><label>Fällig am</label><input id="kr-f" type="date"></div>
+        <div class="form-group"><label>Kategorie</label><select id="kr-k"><option>Miete</option><option>IT</option><option>Musik</option><option>Büro</option><option>Diverses</option></select></div>
+        <div class="form-group"><label>Status</label><select id="kr-s"><option>Offen</option><option>Bezahlt</option><option>Überfällig</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-kreditor')">Abbrechen</button><button class="btn btn-primary" onclick="addKreditor()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Debitor -->
+<div class="modal-overlay" id="modal-debitor">
+  <div class="modal">
+    <div class="modal-head"><h3>Ausgangsrechnung</h3><button class="modal-close" onclick="closeModal('modal-debitor')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Kunde *</label><input id="db-k" type="text"></div>
+        <div class="form-group"><label>Rechnungsnummer</label><input id="db-rn" type="text"></div>
+        <div class="form-group"><label>Betrag (CHF)</label><input id="db-b" type="number"></div>
+        <div class="form-group"><label>Fällig am</label><input id="db-f" type="date"></div>
+        <div class="form-group full"><label>Beschreibung</label><input id="db-desc" type="text"></div>
+        <div class="form-group"><label>Status</label><select id="db-s"><option>Offen</option><option>Bezahlt</option><option>Überfällig</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-debitor')">Abbrechen</button><button class="btn btn-primary" onclick="addDebitor()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Verkauf -->
+<div class="modal-overlay" id="modal-vk">
+  <div class="modal">
+    <div class="modal-head"><h3>Neuer Verkaufsauftrag</h3><button class="modal-close" onclick="closeModal('modal-vk')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Kunde *</label><input id="vk-k" type="text"></div>
+        <div class="form-group"><label>Datum</label><input id="vk-d" type="date"></div>
+        <div class="form-group"><label>Betrag (CHF)</label><input id="vk-b" type="number"></div>
+        <div class="form-group full"><label>Artikel / Beschreibung</label><input id="vk-a" type="text"></div>
+        <div class="form-group"><label>Status</label><select id="vk-s"><option>Offen</option><option>Geliefert</option><option>Storniert</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-vk')">Abbrechen</button><button class="btn btn-primary" onclick="addVK()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Einkauf -->
+<div class="modal-overlay" id="modal-ek">
+  <div class="modal">
+    <div class="modal-head"><h3>Neue Bestellung</h3><button class="modal-close" onclick="closeModal('modal-ek')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Lieferant *</label><input id="ek-l" type="text"></div>
+        <div class="form-group"><label>Datum</label><input id="ek-d" type="date"></div>
+        <div class="form-group"><label>Betrag (CHF)</label><input id="ek-b" type="number"></div>
+        <div class="form-group full"><label>Artikel / Beschreibung</label><input id="ek-a" type="text"></div>
+        <div class="form-group"><label>Status</label><select id="ek-s"><option>Bestellt</option><option>Eingetroffen</option><option>Storniert</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-ek')">Abbrechen</button><button class="btn btn-primary" onclick="addEK()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Artikel -->
+<div class="modal-overlay" id="modal-art">
+  <div class="modal">
+    <div class="modal-head"><h3>Neuer Artikel</h3><button class="modal-close" onclick="closeModal('modal-art')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Bezeichnung *</label><input id="ar-n" type="text"></div>
+        <div class="form-group"><label>Artikel-Nr.</label><input id="ar-id" type="text" placeholder="ART-001"></div>
+        <div class="form-group"><label>Kategorie</label><select id="ar-k"><option>Bücher</option><option>Musik</option><option>Büro</option><option>Technik</option><option>Diverses</option></select></div>
+        <div class="form-group"><label>Preis (CHF)</label><input id="ar-p" type="number"></div>
+        <div class="form-group"><label>Bestand</label><input id="ar-b" type="number" value="0"></div>
+        <div class="form-group"><label>Status</label><select id="ar-s"><option>Aktiv</option><option>Inaktiv</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-art')">Abbrechen</button><button class="btn btn-primary" onclick="addArtikel()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- HR -->
+<div class="modal-overlay" id="modal-hr">
+  <div class="modal">
+    <div class="modal-head"><h3>Mitarbeitende / Freiwillige</h3><button class="modal-close" onclick="closeModal('modal-hr')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Vorname *</label><input id="hr-vn" type="text"></div>
+        <div class="form-group"><label>Nachname *</label><input id="hr-nn" type="text"></div>
+        <div class="form-group full"><label>Funktion / Rolle</label><input id="hr-f" type="text" placeholder="z.B. Jugendsekretärin"></div>
+        <div class="form-group"><label>Typ</label><select id="hr-typ"><option>Angestellt</option><option>Freiwillig</option><option>Ehrenamt</option></select></div>
+        <div class="form-group"><label>Pensum (%)</label><input id="hr-p" type="number" placeholder="80"></div>
+        <div class="form-group"><label>Monatslohn (CHF)</label><input id="hr-l" type="number"></div>
+        <div class="form-group"><label>Eingetreten</label><input id="hr-e" type="date"></div>
+        <div class="form-group"><label>Status</label><select id="hr-s"><option>Aktiv</option><option>Inaktiv</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-hr')">Abbrechen</button><button class="btn btn-primary" onclick="addHR()">Speichern</button></div>
+  </div>
+</div>
+
+<script>
+const COLORS = ["#1A3560","#0F6E56","#854F0B","#185FA5","#993C1D","#534AB7","#3B6D11"];
+function ac(name){let h=0;for(let c of name||"?")h=(h+c.charCodeAt(0))%COLORS.length;return COLORS[h];}
+function ini(v,n){return((v||"")[0]||"").toUpperCase()+((n||"")[0]||"").toUpperCase();}
+function fmtDate(d){if(!d)return"—";try{const p=new Date(d);return p.toLocaleDateString('de-CH');}catch{return d;}}
+function chf(v){return"CHF "+Number(v||0).toLocaleString('de-CH');}
+function badgeStatus(s){
+  const m={Aktiv:"green",Bestätigt:"green",Bezahlt:"green",Eingetroffen:"green",Geliefert:"green",
+    Besucher:"amber",Offen:"amber",Geplant:"amber",Planung:"amber",Bestellt:"amber","2x pro Monat":"amber",
+    Inaktiv:"gray",Storniert:"gray",Pausiert:"gray",
+    Überfällig:"red",Abgesagt:"red"};
+  const c=m[s]||"gray";
+  return `<span class="badge badge-${c}">${s}</span>`;
+}
+
+// ── State ──
+let data = {
+  mitglieder:[
+    {id:1,vn:"Maria",nn:"Müller",em:"maria@bluewin.ch",tel:"+41 79 111",geb:"1985-03-15",st:"Aktiv",adr:"Bahnhofstr. 12, Zürich",sg:"Hauskreis Nord",ein:"2018-01-15",no:"Lobpreisteam"},
+    {id:2,vn:"Peter",nn:"Keller",em:"p.keller@gmail.com",tel:"+41 78 222",geb:"1972-07-22",st:"Aktiv",adr:"Hauptgasse 5, Bern",sg:"Hauskreis Mitte",ein:"2015-06-01",no:"Vorstand"},
+    {id:3,vn:"Sarah",nn:"Zimmermann",em:"s.zimm@outlook.com",tel:"+41 76 333",geb:"1999-11-03",st:"Besucher",adr:"Seestr. 33, Luzern",sg:"",ein:"2025-01-10",no:"Seit Januar dabei"},
+    {id:4,vn:"Thomas",nn:"Weber",em:"t.weber@hispeed.ch",tel:"+41 79 444",geb:"1968-05-30",st:"Aktiv",adr:"Gartenweg 8, Winterthur",sg:"Hauskreis Nord",ein:"2012-03-20",no:"Hauskreisleiter"},
+    {id:5,vn:"Elena",nn:"Frei",em:"elena@gmx.ch",tel:"+41 77 555",geb:"1990-09-14",st:"Inaktiv",adr:"Rathauspl. 2, Basel",sg:"",ein:"2020-08-01",no:""},
+  ],
+  kontakte:[
+    {id:1,vn:"Hans",nn:"Bauer",org:"Druckerei Bauer AG",typ:"Lieferant",em:"h.bauer@bauer-druck.ch",tel:"+41 44 100",adr:"Industriestr. 5, 8005 Zürich",no:""},
+    {id:2,vn:"Ruth",nn:"Steiner",org:"Gemeinde Eglise Bern",typ:"Partner",em:"r.steiner@eglise.ch",tel:"+41 31 200",adr:"Kirchgasse 1, 3011 Bern",no:"Partnerkirche"},
+  ],
+  sg:[
+    {id:1,n:"Hauskreis Zürich Nord",l:"Thomas Weber",t:"Donnerstag",u:"19:30",o:"Schaffhauserstr. 44, Zürich",max:10,akt:8,s:"Aktiv"},
+    {id:2,n:"Hauskreis Zürich Mitte",l:"Peter Keller",t:"Dienstag",u:"20:00",o:"Gemeindehaus",max:12,akt:7,s:"Aktiv"},
+    {id:3,n:"Frauen-Hauskreis",l:"Maria Müller",t:"Mittwoch",u:"18:00",o:"Privat",max:8,akt:6,s:"Aktiv"},
+  ],
+  gd:[
+    {id:1,d:"2025-07-06",u:"10:00",th:"Vertrauen in schwierigen Zeiten",pr:"Pfr. Andreas Lang",wl:"Maria Müller",o:"Gemeindehaus Zürich",s:"Geplant",no:""},
+    {id:2,d:"2025-07-13",u:"10:00",th:"Der gute Hirte",pr:"Pfr. Andreas Lang",wl:"Thomas Weber",o:"Gemeindehaus Zürich",s:"Geplant",no:"Taufe nach Gottesdienst"},
+  ],
+  lieder:[
+    {id:1,t:"10,000 Reasons (Bless the Lord)",a:"Matt Redman",k:"G-Dur",sp:"Englisch",bpm:73,tag:"Lobpreis, Anbetung",no:""},
+    {id:2,t:"Herr, dein Licht",a:"Lothar Kosse",k:"A-Dur",sp:"Deutsch",bpm:82,tag:"Anbetung",no:""},
+    {id:3,t:"Großer Gott, wir loben dich",a:"Traditional",k:"D-Dur",sp:"Deutsch",bpm:68,tag:"Klassisch, Hymnе",no:""},
+    {id:4,t:"Oceans (Where Feet May Fail)",a:"Hillsong",k:"Em",sp:"Englisch",bpm:64,tag:"Anbetung, Gebet",no:""},
+  ],
+  band:[
+    {id:1,vn:"Maria",nn:"Müller",ins:"Gesang",av:"Jeden Sonntag"},
+    {id:2,vn:"Thomas",nn:"Weber",ins:"Gitarre",av:"Jeden Sonntag"},
+    {id:3,vn:"Jonas",nn:"Roth",ins:"Schlagzeug",av:"2x pro Monat"},
+    {id:4,vn:"Lisa",nn:"Hug",ins:"Keyboard / Klavier",av:"Jeden Sonntag"},
+  ],
+  events:[
+    {id:1,n:"Sommerfest 2025",d:"2025-07-19",u:"14:00",o:"Gemeindepark Zürich",max:200,anm:47,s:"Bestätigt",desc:"Jährliches Sommerfest für die ganze Gemeinde"},
+    {id:2,n:"Alpha-Abend",d:"2025-08-05",u:"19:00",o:"Gemeindehaus",max:30,anm:12,s:"Planung",desc:""},
+  ],
+  spenden:[
+    {id:1,d:"2025-07-04",s:"Anonym",b:150,w:"Twint",z:"Gemeinde allgemein"},
+    {id:2,d:"2025-07-03",s:"P. Keller",b:500,w:"Überweisung",z:"Mission"},
+    {id:3,d:"2025-07-02",s:"Anonym",b:80,w:"Bar",z:"Diakonie"},
+    {id:4,d:"2025-07-01",s:"T. Weber",b:200,w:"QR-Rechnung",z:"Gemeinde allgemein"},
+  ],
+  kred:[
+    {id:1,l:"Druckerei Bauer AG",rn:"RE-2025-044",b:380,f:"2025-07-15",k:"Büro",s:"Offen"},
+    {id:2,l:"Swisscom AG",rn:"SW-2025-07",b:120,f:"2025-07-20",k:"IT",s:"Offen"},
+    {id:3,l:"Musikhaus Zürich",rn:"MH-2025-019",b:600,f:"2025-06-30",k:"Musik",s:"Bezahlt"},
+  ],
+  deb:[
+    {id:1,k:"Kirchgemeinde Bern",rn:"AR-2025-012",b:450,f:"2025-07-31",desc:"Raummiete Konferenz",s:"Offen"},
+    {id:2,k:"Familie Huber",rn:"AR-2025-011",b:80,f:"2025-07-10",desc:"Kursunterlagen Alpha",s:"Bezahlt"},
+  ],
+  vk:[
+    {id:1,k:"Kirchgemeinde Bern",d:"2025-06-10",b:450,a:"Raummiete",s:"Geliefert"},
+  ],
+  ek:[
+    {id:1,l:"Musikhaus Zürich",d:"2025-06-20",b:600,a:"Mikrofon-Set",s:"Eingetroffen"},
+    {id:2,l:"Büro-Partner AG",d:"2025-07-01",b:180,a:"Büromaterial",s:"Bestellt"},
+  ],
+  artikel:[
+    {id:1,n:"Liederbuch 2024",aid:"ART-001",k:"Bücher",p:18,b:45,s:"Aktiv"},
+    {id:2,n:"Kinderbibel",aid:"ART-002",k:"Bücher",p:24,b:12,s:"Aktiv"},
+    {id:3,n:"Mikrofon Shure SM58",aid:"ART-003",k:"Technik",p:0,b:4,s:"Aktiv"},
+  ],
+  hr:[
+    {id:1,vn:"Pfr. Andreas",nn:"Lang",f:"Pastor",typ:"Angestellt",p:100,l:7200,e:"2010-09-01",s:"Aktiv"},
+    {id:2,vn:"Sandra",nn:"Meier",f:"Gemeindesekretärin",typ:"Angestellt",p:60,l:3200,e:"2016-03-15",s:"Aktiv"},
+    {id:3,vn:"Maria",nn:"Müller",f:"Lobpreis-Leiterin",typ:"Ehrenamt",p:0,l:0,e:"2018-01-15",s:"Aktiv"},
+  ],
+  dms:[
+    {n:"Jahresrechnung 2024",typ:"PDF",ord:"Finanzen",dat:"2025-01-15",size:"1.2 MB"},
+    {n:"Budget 2025",typ:"XLSX",ord:"Finanzen",dat:"2025-01-10",size:"340 KB"},
+    {n:"Protokoll Vorstand März",typ:"DOCX",ord:"Protokolle",dat:"2025-03-20",size:"180 KB"},
+    {n:"Arbeitsvertrag S. Meier",typ:"PDF",ord:"Personal",dat:"2016-03-15",size:"890 KB"},
+    {n:"Mietvertrag Gemeindehaus",typ:"PDF",ord:"Verträge",dat:"2020-01-01",size:"2.1 MB"},
+    {n:"Mitgliederliste 2025",typ:"XLSX",ord:"Mitglieder",dat:"2025-07-01",size:"220 KB"},
+    {n:"Foto Sommerfest 2024",typ:"JPG",ord:"Diverses",dat:"2024-07-20",size:"4.8 MB"},
+    {n:"Steuerauskunft 2023",typ:"PDF",ord:"Finanzen",dat:"2024-03-01",size:"560 KB"},
+  ],
+  nextId: 100
+};
+
+// ── Navigation ──
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = {dashboard:'Dashboard',mitglieder:'Mitglieder',kontakte:'Kontakte',smallgroups:'Small Groups / Hauskreise',gottesdienst:'Gottesdienst-Planung',worship:'Worship',veranstaltungen:'Veranstaltungen',spenden:'Spenden & Twint',kreditoren:'Kreditoren',debitoren:'Debitoren',verkauf:'Verkauf',einkauf:'Einkauf',artikel:'Artikel',hr:'Personal & HR',dms:'Dokumente (DMS)'};
+  document.getElementById('page-title').textContent = titles[id] || id;
+  renderPage(id);
+}
+
+function showTab(el, targetId) {
+  el.closest('.page').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const parent = el.closest('.page');
+  ['wt-lieder','wt-band','wt-plan'].forEach(id => {
+    const el2 = document.getElementById(id);
+    if (el2) el2.style.display = id === targetId ? '' : 'none';
+  });
+}
+
+// ── Modal ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+
+// ── Render ──
+function renderPage(id) {
+  if (id === 'mitglieder') renderMitglieder();
+  if (id === 'kontakte') renderKontakte();
+  if (id === 'smallgroups') renderSG();
+  if (id === 'gottesdienst') renderGD();
+  if (id === 'worship') { renderLieder(); renderBand(); }
+  if (id === 'veranstaltungen') renderEvents();
+  if (id === 'spenden') renderSpenden();
+  if (id === 'kreditoren') renderKred();
+  if (id === 'debitoren') renderDeb();
+  if (id === 'verkauf') renderVK();
+  if (id === 'einkauf') renderEK();
+  if (id === 'artikel') renderArtikel();
+  if (id === 'hr') renderHR();
+  if (id === 'dms') renderDMS();
+}
+
+function row(cells) { return '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>'; }
+function delBtn(fn) { return `<button class="btn btn-outline btn-sm" onclick="${fn}" style="color:var(--red);border-color:#F09595">✕</button>`; }
+function avatarCell(vn, nn) { return `<div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:${ac(nn)};width:30px;height:30px;font-size:11px">${ini(vn,nn)}</div><div><div style="font-weight:500">${nn}, ${vn}</div></div></div>`; }
+
+function renderMitglieder() {
+  const body = document.getElementById('mitglieder-body');
+  body.innerHTML = data.mitglieder.map(m => row([
+    avatarCell(m.vn, m.nn), m.em||'—', m.tel||'—', fmtDate(m.ein), m.sg||'—', badgeStatus(m.st), delBtn(`delItem('mitglieder',${m.id})`)
+  ])).join('');
+  document.getElementById('m-cnt').textContent = data.mitglieder.length;
+  document.getElementById('m-aktiv').textContent = data.mitglieder.filter(m=>m.st==='Aktiv').length;
+  document.getElementById('m-besucher').textContent = data.mitglieder.filter(m=>m.st==='Besucher').length;
+}
+
+function renderKontakte() {
+  document.getElementById('kontakte-body').innerHTML = data.kontakte.map(k => row([
+    avatarCell(k.vn, k.nn), k.org||'—', k.em||'—', k.tel||'—',
+    `<span class="badge badge-blue">${k.typ}</span>`, delBtn(`delItem('kontakte',${k.id})`)
+  ])).join('');
+}
+
+function renderSG() {
+  document.getElementById('sg-body').innerHTML = data.sg.map(s => row([
+    `<strong>${s.n}</strong>`, s.l, s.t+' '+s.u, s.o,
+    `<span style="font-weight:500">${s.akt||0} / ${s.max}</span>`, badgeStatus(s.s), delBtn(`delItem('sg',${s.id})`)
+  ])).join('');
+}
+
+function renderGD() {
+  document.getElementById('gd-body').innerHTML = data.gd.map(g => row([
+    fmtDate(g.d)+' '+g.u, `<strong>${g.th}</strong>`, g.pr, g.wl, g.o, badgeStatus(g.s), delBtn(`delItem('gd',${g.id})`)
+  ])).join('');
+}
+
+function renderLieder() {
+  document.getElementById('lieder-body').innerHTML = data.lieder.map(l => row([
+    `<strong>${l.t}</strong>`, l.a, `<span class="badge badge-blue">${l.k}</span>`, l.sp,
+    (l.tag||'').split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join(''), delBtn(`delItem('lieder',${l.id})`)
+  ])).join('');
+}
+
+function renderBand() {
+  const icons = {Gesang:'🎤',Gitarre:'🎸',Bass:'🎸',Keyboard:'🎹','Keyboard / Klavier':'🎹',Schlagzeug:'🥁',Cajon:'🥁',Geige:'🎻',Trompete:'🎺','Worship-Leitung':'✝','Technik / Ton':'🔊',Beamer:'📽'};
+  document.getElementById('band-list').innerHTML = data.band.map(b =>
+    `<div class="member-band"><span style="font-size:20px">${icons[b.ins]||'🎵'}</span><div style="flex:1"><div style="font-weight:500;font-size:13px">${b.vn} ${b.nn}</div><div style="font-size:12px;color:var(--text2)">${b.ins}</div></div><span class="badge badge-gray">${b.av}</span></div>`
+  ).join('');
+  document.getElementById('besetzung-list').innerHTML = data.band.filter(b=>b.av==='Jeden Sonntag').map(b =>
+    `<div class="member-band"><span style="font-size:20px">${icons[b.ins]||'🎵'}</span><div style="flex:1"><div style="font-weight:500;font-size:13px">${b.vn} ${b.nn}</div><div style="font-size:12px;color:var(--text2)">${b.ins}</div></div><span class="badge badge-green">Dabei</span></div>`
+  ).join('');
+}
+
+function renderEvents() {
+  document.getElementById('event-body').innerHTML = data.events.map(e => row([
+    `<strong>${e.n}</strong>`, fmtDate(e.d)+' '+e.u, e.o,
+    `<span style="font-weight:500">${e.anm||0} / ${e.max||'∞'}</span>`, badgeStatus(e.s), delBtn(`delItem('events',${e.id})`)
+  ])).join('');
+}
+
+function renderSpenden() {
+  document.getElementById('spenden-body').innerHTML = data.spenden.map(s => row([
+    fmtDate(s.d), s.s||'Anonym', `<strong>${chf(s.b)}</strong>`,
+    `<span class="badge badge-blue">${s.w}</span>`, s.z,
+    `<span class="badge badge-green">Verbucht</span>`
+  ])).join('');
+}
+
+function renderKred() {
+  document.getElementById('kred-body').innerHTML = data.kred.map(k => row([
+    k.l, k.rn, `<strong>${chf(k.b)}</strong>`, fmtDate(k.f),
+    `<span class="badge badge-gray">${k.k}</span>`, badgeStatus(k.s), delBtn(`delItem('kred',${k.id})`)
+  ])).join('');
+}
+
+function renderDeb() {
+  document.getElementById('deb-body').innerHTML = data.deb.map(d => row([
+    d.k, d.rn, `<strong>${chf(d.b)}</strong>`, fmtDate(d.f), d.desc, badgeStatus(d.s), delBtn(`delItem('deb',${d.id})`)
+  ])).join('');
+}
+
+function renderVK() {
+  document.getElementById('vk-body').innerHTML = data.vk.map(v => row([
+    `VK-${v.id}`, v.k, `<strong>${chf(v.b)}</strong>`, fmtDate(v.d), v.a, badgeStatus(v.s), delBtn(`delItem('vk',${v.id})`)
+  ])).join('');
+}
+
+function renderEK() {
+  document.getElementById('ek-body').innerHTML = data.ek.map(e => row([
+    `EK-${e.id}`, e.l, `<strong>${chf(e.b)}</strong>`, fmtDate(e.d), e.a, badgeStatus(e.s), delBtn(`delItem('ek',${e.id})`)
+  ])).join('');
+}
+
+function renderArtikel() {
+  document.getElementById('art-body').innerHTML = data.artikel.map(a => row([
+    a.aid, `<strong>${a.n}</strong>`, a.k, a.p?chf(a.p):'—',
+    `<span style="font-weight:500">${a.b}</span>`, badgeStatus(a.s), delBtn(`delItem('artikel',${a.id})`)
+  ])).join('');
+}
+
+function renderHR() {
+  document.getElementById('hr-body').innerHTML = data.hr.map(h => row([
+    avatarCell(h.vn, h.nn), h.f,
+    h.p?h.p+'%':'—', h.l?chf(h.l):'—', fmtDate(h.e),
+    `<span class="badge badge-${h.typ==='Angestellt'?'blue':h.typ==='Ehrenamt'?'amber':'gray'}">${h.typ}</span>`,
+    delBtn(`delItem('hr',${h.id})`)
+  ])).join('');
+}
+
+function renderDMS() {
+  const icons = {PDF:'📄',XLSX:'📊',DOCX:'📝',JPG:'🖼',PNG:'🖼',ZIP:'📦'};
+  document.getElementById('dms-grid').innerHTML = data.dms.map(d =>
+    `<div class="doc-card"><div class="doc-icon">${icons[d.typ]||'📄'}</div><div class="doc-name">${d.n}</div><div class="doc-meta">${d.typ} · ${d.size}</div><div class="doc-meta">${d.ord}</div></div>`
+  ).join('');
+}
+
+// ── Filter ──
+function filterTable(tableId, q) {
+  const rows = document.querySelectorAll('#'+tableId+' tbody tr');
+  rows.forEach(r => { r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; });
+}
+function filterTableByCol(tableId, col, val) {
+  const rows = document.querySelectorAll('#'+tableId+' tbody tr');
+  rows.forEach(r => {
+    const cell = r.cells[col];
+    r.style.display = !val || (cell && cell.textContent.includes(val)) ? '' : 'none';
+  });
+}
+
+// ── Delete ──
+function delItem(arr, id) {
+  if (!confirm('Wirklich löschen?')) return;
+  data[arr] = data[arr].filter(x => x.id !== id);
+  renderPage(document.querySelector('.page.active').id.replace('page-',''));
+}
+
+// ── Add functions ──
+function nid() { return ++data.nextId; }
+function gv(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function addMitglied() {
+  if (!gv('m-vn')||!gv('m-nn')) return alert('Bitte Vor- und Nachname eingeben.');
+  data.mitglieder.push({id:nid(),vn:gv('m-vn'),nn:gv('m-nn'),em:gv('m-em'),tel:gv('m-tel'),geb:gv('m-geb'),st:gv('m-st'),adr:gv('m-adr'),sg:gv('m-sg'),ein:gv('m-ein'),no:gv('m-no')});
+  closeModal('modal-mitglied'); renderMitglieder();
+}
+function addKontakt() {
+  if (!gv('k-nn')) return alert('Nachname eingeben.');
+  data.kontakte.push({id:nid(),vn:gv('k-vn'),nn:gv('k-nn'),org:gv('k-org'),typ:gv('k-typ'),em:gv('k-em'),tel:gv('k-tel'),adr:gv('k-adr'),no:gv('k-no')});
+  closeModal('modal-kontakt'); renderKontakte();
+}
+function addSG() {
+  if (!gv('sg-n')) return alert('Name eingeben.');
+  data.sg.push({id:nid(),n:gv('sg-n'),l:gv('sg-l'),t:gv('sg-t'),u:gv('sg-u'),o:gv('sg-o'),max:gv('sg-max')||12,akt:0,s:gv('sg-s')});
+  closeModal('modal-sg'); renderSG();
+}
+function addGD() {
+  if (!gv('gd-d')) return alert('Datum eingeben.');
+  data.gd.push({id:nid(),d:gv('gd-d'),u:gv('gd-u'),th:gv('gd-th'),pr:gv('gd-pr'),wl:gv('gd-wl'),o:gv('gd-o'),s:gv('gd-s'),no:gv('gd-no')});
+  closeModal('modal-gd'); renderGD();
+}
+function addLied() {
+  if (!gv('li-t')) return alert('Titel eingeben.');
+  data.lieder.push({id:nid(),t:gv('li-t'),a:gv('li-a'),k:gv('li-k'),sp:gv('li-sp'),bpm:gv('li-bpm'),tag:gv('li-tag'),no:gv('li-no')});
+  closeModal('modal-lied'); renderLieder();
+}
+function addBand() {
+  if (!gv('b-nn')) return alert('Name eingeben.');
+  data.band.push({id:nid(),vn:gv('b-vn'),nn:gv('b-nn'),ins:gv('b-ins'),av:gv('b-av')});
+  closeModal('modal-band'); renderBand();
+}
+function addEvent() {
+  if (!gv('ev-n')) return alert('Name eingeben.');
+  data.events.push({id:nid(),n:gv('ev-n'),d:gv('ev-d'),u:gv('ev-u'),o:gv('ev-o'),max:gv('ev-max'),anm:0,s:gv('ev-s'),desc:gv('ev-desc')});
+  closeModal('modal-event'); renderEvents();
+}
+function addSpende() {
+  if (!gv('sp-b')) return alert('Betrag eingeben.');
+  data.spenden.unshift({id:nid(),d:gv('sp-d'),s:gv('sp-s')||'Anonym',b:gv('sp-b'),w:gv('sp-w'),z:gv('sp-z')});
+  closeModal('modal-spende'); renderSpenden();
+}
+function addKreditor() {
+  if (!gv('kr-l')) return alert('Lieferant eingeben.');
+  data.kred.push({id:nid(),l:gv('kr-l'),rn:gv('kr-rn'),b:gv('kr-b'),f:gv('kr-f'),k:gv('kr-k'),s:gv('kr-s')});
+  closeModal('modal-kreditor'); renderKred();
+}
+function addDebitor() {
+  if (!gv('db-k')) return alert('Kunde eingeben.');
+  data.deb.push({id:nid(),k:gv('db-k'),rn:gv('db-rn'),b:gv('db-b'),f:gv('db-f'),desc:gv('db-desc'),s:gv('db-s')});
+  closeModal('modal-debitor'); renderDeb();
+}
+function addVK() {
+  if (!gv('vk-k')) return alert('Kunde eingeben.');
+  data.vk.push({id:nid(),k:gv('vk-k'),d:gv('vk-d'),b:gv('vk-b'),a:gv('vk-a'),s:gv('vk-s')});
+  closeModal('modal-vk'); renderVK();
+}
+function addEK() {
+  if (!gv('ek-l')) return alert('Lieferant eingeben.');
+  data.ek.push({id:nid(),l:gv('ek-l'),d:gv('ek-d'),b:gv('ek-b'),a:gv('ek-a'),s:gv('ek-s')});
+  closeModal('modal-ek'); renderEK();
+}
+function addArtikel() {
+  if (!gv('ar-n')) return alert('Bezeichnung eingeben.');
+  data.artikel.push({id:nid(),n:gv('ar-n'),aid:gv('ar-id')||'ART-'+(data.nextId),k:gv('ar-k'),p:gv('ar-p'),b:gv('ar-b'),s:gv('ar-s')});
+  closeModal('modal-art'); renderArtikel();
+}
+function addHR() {
+  if (!gv('hr-nn')) return alert('Name eingeben.');
+  data.hr.push({id:nid(),vn:gv('hr-vn'),nn:gv('hr-nn'),f:gv('hr-f'),typ:gv('hr-typ'),p:gv('hr-p'),l:gv('hr-l'),e:gv('hr-e'),s:gv('hr-s')});
+  closeModal('modal-hr'); renderHR();
+}
+
+renderMitglieder();
+</script>
+</body>
+</html>
