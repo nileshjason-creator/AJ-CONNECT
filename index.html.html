@@ -279,15 +279,66 @@
 
     <!-- ── KONTAKTE ── -->
     <div id="page-kontakte" class="page">
-      <div class="card">
-        <div class="card-header"><span class="card-title">Kontakte</span><button class="btn btn-primary" onclick="openModal('modal-kontakt')">+ Neuer Kontakt</button></div>
-        <div class="card-body" style="padding:0">
-          <div class="toolbar" style="padding:14px 18px 0"><div class="search-wrap"><span class="search-icon">🔍</span><input type="text" placeholder="Suchen..." oninput="filterTable('kontakte-table',this.value)"></div></div>
-          <div class="table-wrap" style="padding:14px 18px">
-            <table id="kontakte-table">
-              <thead><tr><th>Name</th><th>Organisation</th><th>E-Mail</th><th>Telefon</th><th>Typ</th><th></th></tr></thead>
-              <tbody id="kontakte-body"></tbody>
-            </table>
+      <div id="kontakte-list-view">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Kontakte</span><button class="btn btn-primary" onclick="openModal('modal-kontakt')">+ Neuer Kontakt</button></div>
+          <div class="card-body" style="padding:0">
+            <div class="toolbar" style="padding:14px 18px 0"><div class="search-wrap"><span class="search-icon">🔍</span><input type="text" placeholder="Suchen..." oninput="filterTable('kontakte-table',this.value)"></div></div>
+            <div class="table-wrap" style="padding:14px 18px">
+              <table id="kontakte-table">
+                <thead><tr><th>Name</th><th>Organisation</th><th>E-Mail</th><th>Telefon</th><th>Typ</th><th>Dok.</th><th></th></tr></thead>
+                <tbody id="kontakte-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="kontakte-detail-view" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <button class="btn btn-outline btn-sm" onclick="showKontakteList()">← Zurück</button>
+          <span style="color:var(--text2);font-size:13px">Kontakte /</span>
+          <span style="font-size:13px;font-weight:500" id="kd-breadcrumb">–</span>
+        </div>
+        <div style="display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="card">
+              <div style="background:var(--navy);padding:20px;border-radius:var(--radius) var(--radius) 0 0;display:flex;align-items:center;gap:14px">
+                <div class="avatar" id="kd-avatar" style="width:50px;height:50px;font-size:18px"></div>
+                <div><div style="color:#fff;font-size:15px;font-weight:600" id="kd-name"></div><div style="color:var(--gold);font-size:12px;margin-top:2px" id="kd-org"></div></div>
+              </div>
+              <div class="card-body" style="padding:0"><table style="width:100%;font-size:13px" id="kd-info-table"></table></div>
+              <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                <button class="btn btn-outline btn-sm" onclick="editKontaktFromDetail()">✏ Bearbeiten</button>
+                <button class="btn btn-sm" style="color:var(--red);border:1px solid #F09595;background:var(--red-bg)" onclick="delKontaktFromDetail()">✕ Löschen</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">📝 Notizen</span></div>
+              <div class="card-body" id="kd-notizen" style="font-size:13px;color:var(--text2);min-height:60px;white-space:pre-wrap"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title">📁 Dokumentenablage (DMS)</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Dateien diesem Kontakt zugeordnet</div></div>
+              <label class="btn btn-primary btn-sm" style="cursor:pointer">+ Datei hochladen<input type="file" multiple style="display:none" onchange="uploadDmsFiles(event)"></label>
+            </div>
+            <div style="background:#EDF2FA;border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span style="font-size:18px">🇨🇭</span>
+              <div style="flex:1;min-width:200px"><div style="font-size:12px;font-weight:600;color:var(--navy)">Demo: Dateien lokal im Browser gespeichert</div><div style="font-size:11px;color:var(--text2)">Für echte Schweizer Datenspeicherung → Supabase Storage (Schweizer Region)</div></div>
+              <button class="btn btn-outline btn-sm" onclick="showSupabaseInfo()">Wie einrichten?</button>
+            </div>
+            <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px">
+              <div class="search-wrap" style="flex:1"><span class="search-icon">🔍</span><input type="text" placeholder="Dokument suchen..." oninput="filterDmsFiles(this.value)" id="dms-search"></div>
+              <select id="dms-filter-typ" onchange="filterDmsFiles(document.getElementById('dms-search').value)" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;background:var(--surface);color:var(--text)">
+                <option value="">Alle Typen</option><option>PDF</option><option>DOCX</option><option>XLSX</option><option>Bild</option><option>Andere</option>
+              </select>
+            </div>
+            <div id="dms-files-list"></div>
+            <div id="dms-dropzone" style="margin:16px;border:2px dashed var(--border);border-radius:var(--radius);padding:28px 20px;text-align:center;color:var(--text3);font-size:13px;cursor:pointer" ondragover="event.preventDefault();this.style.borderColor='var(--navy)';this.style.background='var(--blue-bg)'" ondragleave="this.style.borderColor='var(--border)';this.style.background=''" ondrop="dropFiles(event)">
+              <div style="font-size:28px;margin-bottom:8px">📂</div>
+              <div style="font-weight:500;color:var(--text2);margin-bottom:4px">Dateien hierher ziehen</div>
+              <div style="font-size:12px">oder oben auf "+ Datei hochladen" klicken</div>
+            </div>
           </div>
         </div>
       </div>
@@ -563,6 +614,44 @@
       </div>
     </div>
     <div class="modal-foot"><button class="btn btn-outline" onclick="closeModal('modal-kontakt')">Abbrechen</button><button class="btn btn-primary" onclick="addKontakt()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- Supabase Info -->
+<div class="modal-overlay" id="modal-supabase">
+  <div class="modal">
+    <div class="modal-head" style="background:var(--green)"><h3>🇨🇭 Schweizer Datenspeicherung einrichten</h3><button class="modal-close" onclick="closeModal('modal-supabase')">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--blue-bg);border-radius:var(--radius);padding:14px">
+          <div style="font-weight:600;color:var(--navy);margin-bottom:6px">Was ist Supabase?</div>
+          <div style="font-size:13px;color:var(--text2)">Supabase ist eine Open-Source Datenbank + Dateispeicher. Du kannst die EU-Region (Frankfurt) oder einen Schweizer Server-Anbieter (z.B. Exoscale, nine.ch) wählen — vollständig DSG- und DSGVO-konform.</div>
+        </div>
+        <div style="font-weight:600;color:var(--text);font-size:14px">Schritt für Schritt:</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+            <div><div style="font-weight:500;font-size:13px">Account erstellen</div><div style="font-size:12px;color:var(--text2)">Geh auf supabase.com → "Start your project" → kostenlos registrieren</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+            <div><div style="font-weight:500;font-size:13px">Projekt erstellen → Region: Frankfurt (EU)</div><div style="font-size:12px;color:var(--text2)">Name: "aj-connect" · Region: EU West (Frankfurt) · Passwort notieren</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+            <div><div style="font-weight:500;font-size:13px">Storage Bucket anlegen</div><div style="font-size:12px;color:var(--text2)">Im Supabase Dashboard → Storage → "New Bucket" → Name: "kontakt-dokumente" → Private</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+            <div><div style="font-weight:500;font-size:13px">API-Key kopieren</div><div style="font-size:12px;color:var(--text2)">Settings → API → "anon public key" und "Project URL" kopieren → mir schicken, ich baue die Verbindung ein</div></div>
+          </div>
+        </div>
+        <div style="background:var(--green-bg);border-radius:var(--radius);padding:12px;font-size:12px;color:var(--green)">
+          <strong>Kosten:</strong> Supabase Free Plan: 1 GB Dateispeicher, 50'000 Anfragen/Monat — völlig kostenlos. Reicht für den Start mit 50+ Gemeinden.
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-primary" onclick="closeModal('modal-supabase')">Verstanden</button></div>
   </div>
 </div>
 
@@ -879,7 +968,17 @@ let data = {
     {n:"Foto Sommerfest 2024",typ:"JPG",ord:"Diverses",dat:"2024-07-20",size:"4.8 MB"},
     {n:"Steuerauskunft 2023",typ:"PDF",ord:"Finanzen",dat:"2024-03-01",size:"560 KB"},
   ],
-  nextId: 100
+  nextId: 100,
+  dms_kontakt: {
+    1: [
+      {id:201,name:"Liefervertrag 2024.pdf",typ:"PDF",size:"1.2 MB",dat:"15.01.2025",dataUrl:null},
+      {id:202,name:"Offerte Drucksachen.pdf",typ:"PDF",size:"340 KB",dat:"03.03.2025",dataUrl:null},
+      {id:203,name:"Korrespondenz März.docx",typ:"DOCX",size:"85 KB",dat:"20.03.2025",dataUrl:null},
+    ],
+    2: [
+      {id:204,name:"Partnerschaftsvereinbarung.pdf",typ:"PDF",size:"890 KB",dat:"01.06.2024",dataUrl:null},
+    ]
+  }
 };
 
 // ── Navigation ──
@@ -942,10 +1041,16 @@ function renderMitglieder() {
 }
 
 function renderKontakte() {
-  document.getElementById('kontakte-body').innerHTML = data.kontakte.map(k => row([
-    avatarCell(k.vn, k.nn), k.org||'—', k.em||'—', k.tel||'—',
-    `<span class="badge badge-blue">${k.typ}</span>`, delBtn(`delItem('kontakte',${k.id})`)
-  ])).join('');
+  document.getElementById('kontakte-body').innerHTML = data.kontakte.map(k => {
+    const docs = (data.dms_kontakt[k.id]||[]).length;
+    return row([
+      `<span style="cursor:pointer;color:var(--navy);font-weight:500;text-decoration:underline" onclick="openKontaktDetail(${k.id})">${avatarCell(k.vn, k.nn)}</span>`,
+      k.org||'—', k.em||'—', k.tel||'—',
+      `<span class="badge badge-blue">${k.typ}</span>`,
+      docs > 0 ? `<span class="badge badge-green">📄 ${docs}</span>` : `<span style="color:var(--text3);font-size:12px">—</span>`,
+      `<button class="btn btn-outline btn-sm" onclick="openKontaktDetail(${k.id})" style="color:var(--navy)">Öffnen →</button>`
+    ]);
+  }).join('');
 }
 
 function renderSG() {
@@ -1072,8 +1177,168 @@ function addMitglied() {
 }
 function addKontakt() {
   if (!gv('k-nn')) return alert('Nachname eingeben.');
-  data.kontakte.push({id:nid(),vn:gv('k-vn'),nn:gv('k-nn'),org:gv('k-org'),typ:gv('k-typ'),em:gv('k-em'),tel:gv('k-tel'),adr:gv('k-adr'),no:gv('k-no')});
+  const id = nid();
+  data.kontakte.push({id,vn:gv('k-vn'),nn:gv('k-nn'),org:gv('k-org'),typ:gv('k-typ'),em:gv('k-em'),tel:gv('k-tel'),adr:gv('k-adr'),no:gv('k-no')});
+  data.dms_kontakt[id] = [];
   closeModal('modal-kontakt'); renderKontakte();
+}
+
+// ── Kontakt Detail & DMS ──────────────────────────────────────────
+let currentKontaktId = null;
+
+function openKontaktDetail(id) {
+  currentKontaktId = id;
+  const k = data.kontakte.find(x => x.id === id);
+  if (!k) return;
+  document.getElementById('kontakte-list-view').style.display = 'none';
+  document.getElementById('kontakte-detail-view').style.display = '';
+  document.getElementById('kd-breadcrumb').textContent = k.vn + ' ' + k.nn;
+  const av = document.getElementById('kd-avatar');
+  av.textContent = ini(k.vn, k.nn);
+  av.style.background = ac(k.nn);
+  document.getElementById('kd-name').textContent = k.vn + ' ' + k.nn;
+  document.getElementById('kd-org').textContent = k.org || k.typ;
+  document.getElementById('kd-notizen').textContent = k.no || 'Keine Notizen vorhanden.';
+  const rows = [
+    ['Typ', `<span class="badge badge-blue">${k.typ}</span>`],
+    ['Organisation', k.org||'—'],
+    ['E-Mail', k.em ? `<a href="mailto:${k.em}" style="color:var(--navy)">${k.em}</a>` : '—'],
+    ['Telefon', k.tel||'—'],
+    ['Adresse', k.adr||'—'],
+  ];
+  document.getElementById('kd-info-table').innerHTML = rows.map(([l,v]) =>
+    `<tr><td style="padding:9px 16px;color:var(--text2);font-size:12px;width:110px;border-bottom:1px solid var(--border)">${l}</td><td style="padding:9px 16px;font-size:13px;border-bottom:1px solid var(--border)">${v}</td></tr>`
+  ).join('');
+  if (!data.dms_kontakt[id]) data.dms_kontakt[id] = [];
+  renderDmsFilesList();
+}
+
+function showKontakteList() {
+  document.getElementById('kontakte-list-view').style.display = '';
+  document.getElementById('kontakte-detail-view').style.display = 'none';
+  currentKontaktId = null;
+}
+
+function editKontaktFromDetail() {
+  const k = data.kontakte.find(x => x.id === currentKontaktId);
+  if (!k) return;
+  document.getElementById('k-vn').value = k.vn;
+  document.getElementById('k-nn').value = k.nn;
+  document.getElementById('k-org').value = k.org||'';
+  document.getElementById('k-typ').value = k.typ;
+  document.getElementById('k-em').value = k.em||'';
+  document.getElementById('k-tel').value = k.tel||'';
+  document.getElementById('k-adr').value = k.adr||'';
+  document.getElementById('k-no').value = k.no||'';
+  openModal('modal-kontakt');
+}
+
+function delKontaktFromDetail() {
+  const k = data.kontakte.find(x => x.id === currentKontaktId);
+  if (!k) return;
+  if (!confirm(k.vn + ' ' + k.nn + ' und alle zugehörigen Dokumente löschen?')) return;
+  data.kontakte = data.kontakte.filter(x => x.id !== currentKontaktId);
+  delete data.dms_kontakt[currentKontaktId];
+  showKontakteList();
+  renderKontakte();
+}
+
+function showSupabaseInfo() { openModal('modal-supabase'); }
+
+// ── DMS File handling ─────────────────────────────────────────────
+function getFileType(name) {
+  const ext = (name.split('.').pop()||'').toUpperCase();
+  if (['PDF'].includes(ext)) return 'PDF';
+  if (['DOC','DOCX'].includes(ext)) return 'DOCX';
+  if (['XLS','XLSX','CSV'].includes(ext)) return 'XLSX';
+  if (['JPG','JPEG','PNG','GIF','WEBP','SVG'].includes(ext)) return 'Bild';
+  return 'Andere';
+}
+
+function getFileIcon(typ) {
+  return {PDF:'📄',DOCX:'📝',XLSX:'📊',Bild:'🖼',Andere:'📎'}[typ]||'📎';
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return Math.round(bytes/1024) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+function uploadDmsFiles(event) {
+  const files = Array.from(event.target.files);
+  if (!currentKontaktId || !files.length) return;
+  files.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      data.dms_kontakt[currentKontaktId].push({
+        id: nid(), name: f.name, typ: getFileType(f.name),
+        size: fmtSize(f.size), dat: new Date().toLocaleDateString('de-CH'),
+        dataUrl: e.target.result
+      });
+      renderDmsFilesList();
+      renderKontakte();
+    };
+    reader.readAsDataURL(f);
+  });
+  event.target.value = '';
+}
+
+function dropFiles(event) {
+  event.preventDefault();
+  document.getElementById('dms-dropzone').style.borderColor = 'var(--border)';
+  document.getElementById('dms-dropzone').style.background = '';
+  const files = Array.from(event.dataTransfer.files);
+  if (!currentKontaktId || !files.length) return;
+  files.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      data.dms_kontakt[currentKontaktId].push({
+        id: nid(), name: f.name, typ: getFileType(f.name),
+        size: fmtSize(f.size), dat: new Date().toLocaleDateString('de-CH'),
+        dataUrl: e.target.result
+      });
+      renderDmsFilesList();
+      renderKontakte();
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function renderDmsFilesList() {
+  const q = (document.getElementById('dms-search')||{}).value||'';
+  const ft = (document.getElementById('dms-filter-typ')||{}).value||'';
+  const files = (data.dms_kontakt[currentKontaktId]||[]).filter(f =>
+    (!q || f.name.toLowerCase().includes(q.toLowerCase())) &&
+    (!ft || f.typ === ft)
+  );
+  const el = document.getElementById('dms-files-list');
+  if (!files.length) {
+    el.innerHTML = `<div style="padding:20px 16px;text-align:center;color:var(--text3);font-size:13px">Noch keine Dokumente hochgeladen.</div>`;
+    return;
+  }
+  el.innerHTML = `<div style="padding:4px 0">` + files.map(f => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);transition:background 0.1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+      <span style="font-size:22px;flex-shrink:0">${getFileIcon(f.typ)}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px">${f.typ} · ${f.size} · Hochgeladen ${f.dat}</div>
+      </div>
+      <span class="badge badge-gray" style="flex-shrink:0">${f.typ}</span>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${f.dataUrl ? `<a href="${f.dataUrl}" download="${f.name}" class="btn btn-outline btn-sm" title="Herunterladen" style="text-decoration:none">⬇</a>` : ''}
+        <button class="btn btn-sm" style="color:var(--red);border:1px solid #F09595;background:var(--red-bg)" onclick="deleteDmsFile(${f.id})" title="Löschen">✕</button>
+      </div>
+    </div>`).join('') + `</div>`;
+}
+
+function filterDmsFiles(q) { renderDmsFilesList(); }
+
+function deleteDmsFile(fileId) {
+  if (!confirm('Dokument löschen?')) return;
+  data.dms_kontakt[currentKontaktId] = data.dms_kontakt[currentKontaktId].filter(f => f.id !== fileId);
+  renderDmsFilesList();
+  renderKontakte();
 }
 function addSG() {
   if (!gv('sg-n')) return alert('Name eingeben.');
